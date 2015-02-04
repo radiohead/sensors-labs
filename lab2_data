@@ -1,0 +1,22 @@
+Task 1
+
+Frequency   Energy
+4           11357 joules
+8           12278 joules
+16          12541 joules
+
+Task 2
+
+Driver      Energy
+nullrdc     2342 joules
+xmac        4921 joules
+lpp         10300 joules
+
+Task 3
+
+Driver      Energy
+nullrdc     4636 joules
+lpp         4937 joules
+contikimac  5118 joules
+cxmac       5954 joules
+xmac        8991 joules

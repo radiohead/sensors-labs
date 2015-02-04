@@ -52,29 +52,30 @@
 #include <math.h>
 
 /*---------------------------------------------------------------------------*/
-PROCESS(example_broadcast_process, "BROADCAST example");
-AUTOSTART_PROCESSES(&example_broadcast_process);
+PROCESS(example_unicast_process, "UNICAST example");
+AUTOSTART_PROCESSES(&example_unicast_process);
 /*---------------------------------------------------------------------------*/
 static void
-broadcast_recv(struct broadcast_conn *c, const rimeaddr_t *from)
+unicast_recv(struct unicast_conn *c, const rimeaddr_t *from)
 {
-  // printf("broadcast message received from %d.%d: '%s'\n", from->u8[0], from->u8[1], (char *)packetbuf_dataptr());
+  printf("uicast message received from %d.%d: '%s'\n", from->u8[0], from->u8[1], (char *)packetbuf_dataptr());
 }
 
-static const struct broadcast_callbacks broadcast_call = {broadcast_recv};
-static struct broadcast_conn broadcast;
+static const struct unicast_callbacks unicast_call = {unicast_recv};
+static struct unicast_conn unicast;
 static double total_energy_m = 0.0;
 static unsigned int times_m = 0;
 
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(example_broadcast_process, ev, data)
+PROCESS_THREAD(example_unicast_process, ev, data)
 {
   static struct etimer et;
   static struct etimer minute_t;
   double cpu_time = 0, lpm_time = 0, transmit_time = 0, listen_time = 0;
   double cpu_energy, lpm_energy, transmit_energy, listen_energy, total_energy;
+  rimeaddr_t destination_address;
 
-  PROCESS_EXITHANDLER(broadcast_close(&broadcast);)
+  PROCESS_EXITHANDLER(unicast_close(&unicast);)
 
   PROCESS_BEGIN();
   etimer_set(&minute_t, CLOCK_SECOND * 60);
@@ -82,7 +83,7 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
   /* Start powertracing, once every two seconds. */
   // powertrace_start(CLOCK_SECOND * 2);
   
-  broadcast_open(&broadcast, 129, &broadcast_call);
+  unicast_open(&unicast, 146, &unicast_call);
 
   while(1) {
     /* Delay 2-4 seconds */
@@ -91,8 +92,14 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 
     packetbuf_copyfrom("Hello", 6);
-    broadcast_send(&broadcast);
-    printf("broadcast message sent\n");
+    destination_address.u8[0] = 1;
+    destination_address.u8[1] = 0;
+
+    if(!rimeaddr_cmp(&destination_address, &rimeaddr_node_addr)) {
+      unicast_send(&unicast, &destination_address);
+    }
+ 
+    printf("unicast message sent\n");
 
     cpu_time = energest_type_time(ENERGEST_TYPE_CPU);
     lpm_time = energest_type_time(ENERGEST_TYPE_LPM);
