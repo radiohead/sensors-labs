@@ -106,10 +106,10 @@ PROCESS_THREAD(example_unicast_process, ev, data)
     transmit_time = energest_type_time(ENERGEST_TYPE_TRANSMIT);
     listen_time = energest_type_time(ENERGEST_TYPE_LISTEN);
 
-    cpu_energy = (cpu_time / CLOCK_SECOND) * (5 * pow(10, -3) * 3);
-    lpm_energy = (lpm_time / CLOCK_SECOND) * (2.6 * pow(10, -6) * 3);
-    transmit_energy = (transmit_time / CLOCK_SECOND) * (pow(10, -3) * 19.5 * 3);
-    listen_energy = (listen_time / CLOCK_SECOND) * (21.8 * pow(10, -3) * 3);
+    cpu_energy = (cpu_time / RTIMER_SECOND) * (5 * pow(10, -3) * 3);
+    lpm_energy = (lpm_time / RTIMER_SECOND) * (2.6 * pow(10, -6) * 3);
+    transmit_energy = (transmit_time / RTIMER_SECOND) * (pow(10, -3) * 19.5 * 3);
+    listen_energy = (listen_time / RTIMER_SECOND) * (21.8 * pow(10, -3) * 3);
 
     total_energy = cpu_energy + lpm_energy + transmit_energy + listen_energy;
 
